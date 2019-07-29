@@ -1,0 +1,53 @@
+- in JS regular expressions are also objects
+- regex follows the literal syntax: var re = /regex/;
+- you can also call the constructor: var re = new RegExp('regex');
+- use the constructor for user input or when you know the regex pattern will be changing
+
+// WRITING A REGEX pattern  
+
+//USING SIMPLE PATTERNS
+- simple patterns are constructed of character for which you want to find a direct match
+- /abc/ matches "abc" when they are in succession in a string 
+    - this would not match if any of the letters are preceded by a space, for example
+
+//USING SPECIAL CHARACTERS
+- use special characters when you are looking for more than direct match
+- for example: 
+    - use /ab*c/ if you want to match a single 'a' followed by zero or more 'b' followed by a single 'c'
+    - given the string 'aaabbbcccbc' the above would match the 'abbbc' substring
+//COMPLETE LIST OF SPECIAL CHARACTERS AND THEIR MEANING
+- \ : the backslash says to treat the following character as a special one and not literally
+       - for example: \b doesn't match any single character but instead denotes a word boundary
+       - but on the contrary, a special character that is preceded by a backslash says to treat the character as if it were not special but literally. This is called 'escaping'
+       - ex: \* would match the literal character '*' instead of looking for repeat characters (zero or more) or \\ would match a literal backslash ('\');
+- ^ : matches the beginning of an input
+         - /^A/ does not match the 'A' in 'an A' but does match the 'A' in 'An E'
+- $ : matches the end of an input      
+         - ex: /t%/ does not match the 't' in 'eater' but does in 'eat'
+- * : matches the preceding expression 0 or more times. Equivalent to {0,}
+        - ex: /bo*/ matches 'booooooo' in 'the ghost boooooooed
+            and the 'b' in 'a bird warbled
+- + : matches the preceding expression 1 or more times. Equivalent to {1,}
+        - ex: /a+/ matches the 'a' in 'candy', all the a's in 'caaaaaaandy' but none of the a's in 'cndy'
+- ? : matches the preceding expression 0 or 1 time. Equivalent to {0,1}
+        - ex: /e?le?/ matches the 'el' in 'angel' and the 'le' in angle and also the 'l' in 'oslo'
+        - If used immediately after any of the quantifiers *,+,?, or {}, makes the quantifier non-greedy (matching the fewest possible characters),
+         as opposed to the default, which is greedy (matches as many characters as possible).
+         - ex: applying /\d+/ to '123abc' matches '123' but applying /\d+?/ to the same string only matches the '1'
+         - also used in lookahead insertions
+- . : the period matches any single character except the newline character, by default
+        - ex: /.n/ matches 'an' and 'on' in 'nay, an apple is on the tree', but not 'nay'
+        - if the s ("dotAll") flag is set to true, it also matches newline characters
+- (x) : matches 'x' and remembers the match, as the following example shows. The parentheses are called capturing parentheses or capturing groups
+        - ex: the '(foo)' and '(bar)' in the pattern /(foo) (bar) \1 \2/ match and remember the first two words in the string 'foo bar foo bar'. 
+        The \1 and \2 denote the first and second parenthesized substring matches - foo and bar, matching the string's last two words. 
+        Note that \1,\2,...,\n are used in the matching part of the regex, for more info see \n below.
+         In the replacement part of the regex the syntax $1,$2,...,$n must be used, e.g.: 'bar foo'.replace(/(...) (...), '$2 $1'). $& means the whole string matched
+- (?:x) : matches 'x' but does not remember the match. The parentheses are called non-capturing, and let you define the subexpressions for regular expression operators to work with.
+            - ex: Consider the sample expression /(?:foo) {1,2}/. If the expression was /foo{1,2}/, the {1,2} characters would apply only to the last 'o' in 'foo'.
+             With the non-capturing parentheses, the {1,2} applies to the entire word 'foo'
+- x(?=y) : matches 'x' only if 'x' is followed by 'y'. This is called a lookahead
+            - ex: /Jack(?=Sprat)/ matches 'Jack' only if it is followed by 'Sprat'. /Jack(?=Sprat|Frost)/ only matches 'Jack' if it followed by 'Sprat' or 'Frost'. 
+            However, does not match 'Sprat' or 'Frost'
+- x(?!y) : matches 'x' only if 'x' is not followed by 'y'. This is called negated lookahead
+            - ex: /\d+(?!\.)/ matches a number only if it not followed by a decimal point. The regex /\d+(?!\.)/.exec("3.141) matches '141' but not '3.141'
